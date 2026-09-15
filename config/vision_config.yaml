@@ -1,0 +1,49 @@
+experiment:
+  name: "vision_augmentation_benchmark"
+  domain: "vision"
+  seed: 42
+  device: "auto"
+
+dataset:
+  name: "CIFAR10"
+  root: "./data/raw/cifar10"
+  num_classes: 10
+  samples_per_class: 100
+  image_size: 224
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+
+model:
+  name: "resnet18"
+  pretrained: true
+  dropout: 0.3
+
+training:
+  batch_size: 32
+  epochs: 30
+  learning_rate: 0.001
+  optimizer: "adam"
+  weight_decay: 0.0001
+  scheduler: "reduce_on_plateau"
+  scheduler_patience: 5
+  scheduler_factor: 0.5
+  early_stopping_patience: 10
+  num_workers: 2
+  pin_memory: true
+
+augmentation:
+  strategies:
+    - baseline
+    - basic_geometric
+    - photometric
+    - mixup
+    - cutmix
+    - combined
+  mixup_alpha: 0.2
+  cutmix_alpha: 1.0
+
+benchmark:
+  num_runs: 3
+  results_dir: "./experiments/results/vision"
+  figures_dir: "./reports/figures/vision"

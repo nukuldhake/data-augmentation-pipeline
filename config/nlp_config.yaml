@@ -1,0 +1,62 @@
+experiment:
+  name: "nlp_augmentation_benchmark"
+  domain: "nlp"
+  seed: 42
+  device: "auto"
+
+dataset:
+  name: "sst2"
+  source: "glue"
+  subset: "sst2"
+  text_column: "sentence"
+  label_column: "label"
+  num_classes: 2
+  samples_per_class: 200
+  max_seq_length: 128
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+
+model:
+  name: "distilbert-base-uncased"
+  pretrained: true
+  dropout: 0.2
+  freeze_embeddings: false
+
+training:
+  batch_size: 8
+  gradient_accumulation_steps: 2
+  epochs: 15
+  learning_rate: 0.00002
+  optimizer: "adamw"
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  scheduler: "linear"
+  early_stopping_patience: 5
+  max_grad_norm: 1.0
+  num_workers: 0
+  pin_memory: true
+
+augmentation:
+  strategies:
+    - baseline
+    - synonym_replacement
+    - random_insertion
+    - random_deletion
+    - random_swap
+    - back_translation
+    - combined_best
+  aug_p: 0.3
+  aug_min: 1
+  aug_max: 3
+  n_augments_per_sample: 2
+  back_translation:
+    from_model: "Helsinki-NLP/opus-mt-en-de"
+    to_model: "Helsinki-NLP/opus-mt-de-en"
+    device: "cpu"
+    batch_size: 16
+
+benchmark:
+  num_runs: 3
+  results_dir: "./experiments/results/nlp"
+  figures_dir: "./reports/figures/nlp"
